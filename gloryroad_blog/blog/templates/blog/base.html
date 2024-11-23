@@ -1,0 +1,110 @@
+<!DOCTYPE html>  
+<html lang="zh-Hans">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>{% block title %}博客{% endblock %}</title>  
+    {% load static %}  
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">   
+    <link rel="stylesheet" href="{% static 'ckeditor/ckeditor/plugins/codesnippet/lib/highlight/styles/github.css' %}">  
+    <style>  
+        /* 设置全屏高度以便于垂直居中 */  
+        .full-height {  
+            height: 100vh; /* 100% 视口高度 */  
+        }  
+
+        .login-container {  
+            max-width: 55%;  
+            position: absolute;  
+            top: 40%;           
+            left: 50%;          
+            transform: translate(-50%, -50%);   
+        }   
+
+        .navbar {   
+            margin-bottom: 20px; /* 为导航栏和其他内容之间添加间隔 */  
+        }  
+
+        .container img {  
+            max-width: 100%;   
+            height: auto;   
+            display: block;   
+            margin: 0 auto;   
+        }  
+
+        .comments {  
+            clear: both;   
+        }  
+        
+        /* 增加悬停效果 */  
+        .nav-link:hover {  
+            color: #0056b3 !important; /* 悬停时字体颜色 */  
+            background-color: rgba(0, 86, 179, 0.1); /* 悬停时背景色 */  
+            border-radius: 5px; /* 圆角 */  
+        }  
+    </style>  
+</head>  
+<body >  
+    <nav class="navbar navbar-default">  
+        <div class="container-fluid">  
+            <a class="navbar-brand" href="{% url 'post_list' %}">光荣之路学院</a>  
+
+            <div class="collapse navbar-collapse" id="navbarNav">  
+                <ul class="nav navbar-nav navbar-right"> 
+			    <li class="nav-item">  
+                            <a class="nav-link" href="{% url 'post_list' %}">博客首页</a>  
+                        </li>   
+                    {% if user.is_authenticated %}  
+                        <li class="nav-item">  
+                            <a class="nav-link" href="{% url 'my_blogs' %}">我的博客</a>  
+                        </li>  
+                        <li class="nav-item">  
+                            <a class="nav-link" href="{% url 'post_create' %}">发布博客</a>  
+                        </li>
+                          
+                        {% if user.is_staff %}  
+                            <li class="nav-item">  
+                                <a class="nav-link" href="{% url 'unapproved_posts' %}">审核博客</a>  
+                            </li>  
+                            <li class="nav-item">  
+                                <a class="nav-link" href="{% url 'unapproved_comments' %}">审核评论</a>  
+                            </li>
+                        <li class="nav-item">  
+                            <a class="nav-link" href="{% url 'logout' %}">登出</a>  
+                        </li>  
+                        {% endif %}  
+                    {% else %}  
+                        <li class="nav-item">  
+                            <a class="btn btn-outline-light me-2" href="{% url 'register' %}">注册</a>  
+                        </li>  
+                        <li class="nav-item">  
+                            <a class="btn btn-outline-light" href="{% url 'login' %}">登录</a>  
+                        </li>  
+                    {% endif %}  
+                </ul>  
+            </div>  
+        </div>  
+    </nav>  
+
+    <div class="container mt-5">  
+        {% block content %}{% endblock %}  
+    </div>  
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>  
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>  
+    <script src="{% static 'ckeditor/ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js' %}"></script>  
+    <script>  
+        document.addEventListener("DOMContentLoaded", function () {  
+            hljs.initHighlightingOnLoad();  
+        });  
+        document.addEventListener("DOMContentLoaded", function () {  
+            document.querySelectorAll('pre br').forEach(br => {  
+                const parent = br.parentNode;  
+                if (parent.tagName === 'PRE') {  
+                    parent.removeChild(br);  
+                }  
+            });  
+        });  
+    </script>  
+</body>  
+</html>

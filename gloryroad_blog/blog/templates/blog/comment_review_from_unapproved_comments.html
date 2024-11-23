@@ -1,0 +1,61 @@
+{% extends 'blog/base.html' %}  
+
+{% block title %}登录{% endblock %}  
+
+{% load static %}  
+
+{% block content %} 
+    <div class="container mt-5">  
+        <h2>评论审核</h2>  
+
+        <form method="GET" class="mb-4">  
+            <div class="input-group">  
+                <input type="text" name="search" class="form-control" placeholder="搜索评论内容" value="{{ search_query }}">  
+                <button class="btn btn-primary" type="submit">搜索</button>  
+            </div>  
+        </form>  
+
+        <div class="mb-4">  
+            <a href="{% url 'unapproved_comments' %}?search={{ search_query }}" class="btn btn-warning">显示未审核的评论</a>  
+            <a href="{% url 'approved_comments' %}?search={{ search_query }}" class="btn btn-success">显示已审核的评论</a>  
+            <a href="{% url 'all_comments' %}?search={{ search_query }}" class="btn btn-danger">显示全部评论</a>  
+        </div>  
+
+        <ul class="list-group">  
+            {% for comment in comments %}  
+            <li class="list-group-item">  
+                <strong>{{ comment.author.username }}</strong>: {{ comment.content }}  
+                <form method="POST" action="{% url 'approve_comment_from_unapproved_comments' comment.id %}?search={{ search_query }}" class="float-end">  
+    {% csrf_token %}  
+    {% if comment.is_approved %}  
+    <button class="btn btn-danger btn-sm" type="submit">审核不通过</button>  
+    {% else %}  
+    <button class="btn btn-success btn-sm" type="submit">审核通过</button>  
+    {% endif %}  
+</form> 
+            </li>  
+            {% empty %}  
+            <li class="list-group-item">没有未审核的评论。</li>  
+            {% endfor %}  
+        </ul>  
+        
+       <div class="pagination">  
+    <ul class="pagination">  
+        {% if comments.has_previous %}  
+            <li class="page-item">  
+                <a class="page-link" href="?page={{ comments.previous_page_number }}&search={{ search_query }}">上一页</a>  
+            </li>  
+        {% endif %}  
+        <li class="page-item disabled">  
+            <span class="page-link">{{ comments.number }} / {{ comments.paginator.num_pages }}</span>  
+        </li>  
+        {% if comments.has_next %}  
+            <li class="page-item">  
+                <a class="page-link" href="?page={{ comments.next_page_number }}&search={{ search_query }}">下一页</a>  
+            </li>  
+        {% endif %}  
+    </ul>  
+</div>
+    </div>  
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>  
+{% endblock %}  

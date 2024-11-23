@@ -1,0 +1,72 @@
+{% extends 'blog/base.html' %}  
+
+{% block title %}登录{% endblock %}  
+
+{% load static %}  
+
+{% block content %}  
+    <div class="container mt-5">  
+        <h1>{{ post.title }}</h1>  
+        <p>作者: {{ post.author }} | 日期: {{ post.created_at }}</p>  
+        <div>  
+            {{ post.content|safe }}  
+        </div>  
+         {% if post.video_url %}  
+            <div class="video-container">  
+                <iframe width="560" height="315" src="{{ post.video_url }}" frameborder="0" allowfullscreen></iframe>  
+            </div>  
+        {% endif %} 
+
+        <a href="{% url 'post_list' %}" class="btn btn-primary mt-3">返回列表</a>  
+
+        <hr>  
+
+        <h3>评论</h3>  
+        <div class="comments">  
+            {% for comment in comments %}  
+                <div class="card mb-2">  
+                    <div class="card-body">  
+                        <h5 class="card-title">{{ comment.author.username }}</h5>  
+                        <p class="card-text">{{ comment.content|linebreaks }}</p>  
+                        <p class="card-text"><small class="text-muted">{{ comment.created_at }}</small></p>  
+                    </div>  
+                </div>  
+            {% empty %}  
+                <p>暂无评论。</p>  
+            {% endfor %}  
+        </div> 
+
+   
+
+        <!-- 翻页链接 -->  
+        <div class="pagination">  
+            <ul class="pagination">  
+                {% if comments.has_previous %}  
+                    <li class="page-item">  
+                        <a class="page-link" href="?page={{ comments.previous_page_number }}">上一页</a>  
+                    </li>  
+                {% endif %}  
+                <li class="page-item disabled">  
+                    <span class="page-link">{{ comments.number }} / {{ comments.paginator.num_pages }}</span>  
+                </li>  
+                {% if comments.has_next %}  
+                    <li class="page-item">  
+                        <a class="page-link" href="?page={{ comments.next_page_number }}">下一页</a>  
+                    </li>  
+                {% endif %}  
+            </ul>  
+        </div>  
+
+        {% if user.is_authenticated %}  
+            <h4>添加评论</h4>  
+            <form method="POST">  
+                {% csrf_token %}  
+                {{ comment_form.as_p }}  
+                <button type="submit" class="btn btn-success">提交评论</button>  
+            </form>  
+        {% else %}  
+            <p>请先 <a href="{% url 'login' %}">登录</a> 后才能评论。</p>  
+        {% endif %}  
+    </div>  
+
+{% endblock %}  

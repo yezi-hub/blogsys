@@ -1,0 +1,89 @@
+{% extends 'blog/base.html' %}  
+
+{% block title %}登录{% endblock %}  
+
+{% load static %}  
+
+{% block content %}  
+    <div class="container mt-5">  
+        <h2>博客审核</h2>  
+
+        <div class="mb-4">  
+            <form method="GET" class="input-group">  <!-- 确保在此处使用input-group类 -->  
+                <input type="text" name="search" class="form-control" placeholder="搜索标题或内容" value="{{ search_query }}">  
+                <button class="btn btn-primary" type="submit">搜索</button>  
+            </form>   
+        </div>  
+
+        <div class="mb-4">  
+            <a href="{% url 'unapproved_posts' %}?search={{ search_query }}" class="btn btn-warning">显示未审核的博客</a>  
+            <a href="{% url 'approved_posts' %}?search={{ search_query }}" class="btn btn-success">显示已审核的博客</a>  
+            <a href="{% url 'all_posts' %}?search={{ search_query }}" class="btn btn-danger">显示全部博客</a>  
+        </div>  
+
+        <ul class="list-group">  
+            {% for post in posts %}  
+            <li class="list-group-item">  
+                <strong>{{ post.title }}</strong>  
+                <p>{{ post.content|safe }}</p>
+        {% if post.video_url %}  
+                <div class="video-container">  
+               
+        <video width="640" height="360" controls>
+            <source src="{{ post.video_url }}" >
+            </video> 
+                </div>  
+                {% endif %}
+  
+                - {{ post.created_at }}  
+                <form method="POST" action="{% url 'approve_post_from_all_posts' post.id %}?search={{ search_query }}" class="float-end">  
+                    {% csrf_token %}  
+                    {% if post.is_approved %}  
+                        <button class="btn btn-danger btn-sm" type="submit">审核不通过</button>  
+                    {% else %}  
+                        <button class="btn btn-success btn-sm" type="submit">审核通过</button>  
+                    {% endif %}  
+                </form>  
+            </li>  
+            {% empty %}  
+            <li class="list-group-item">没有未审核的博客文章。</li>  
+            {% endfor %}  
+        </ul>  
+
+        <div class="pagination">  
+            <ul class="pagination">  
+                {% if posts.has_previous %}  
+                    <li class="page-item">  
+                        <a class="page-link" href="?page={{ posts.previous_page_number }}&search={{ search_query }}">上一页</a>  
+                    </li>  
+                {% endif %}  
+                <li class="page-item disabled">  
+                    <span class="page-link">{{ posts.number }} / {{ posts.paginator.num_pages }}</span>  
+                </li>  
+                {% if posts.has_next %}  
+                    <li class="page-item">  
+                        <a class="page-link" href="?page={{ posts.next_page_number }}&search={{ search_query }}">下一页</a>  
+                    </li>  
+                {% endif %}  
+           <!-- 新增跳转输入框 -->  
+            <!-- 跳转输入框放在最后 -->  
+            <li class="page-item ml-3">  
+                <form method="get" class="form-inline d-flex align-items-center" onsubmit="return validatePageInput()">  
+                    <input type="number"   
+                           name="page"   
+                           min="1"   
+                           max="{{ page_obj.paginator.num_pages }}"   
+                           placeholder="跳转页码"   
+                           class="form-control form-control-sm mr-2"  
+                           style="width: 120 px;"  
+                           {% if query %}value="{{ page_obj.number }}"{% endif %}>  
+                    {% if query %}  
+                        <input type="hidden" name="q" value="{{ query }}">  
+                    {% endif %}  
+                    <button type="submit" class="btn btn-sm btn-primary">跳转</button>  
+                </form>  
+            </li>  
+            </ul>  
+        </div>  
+    </div>  
+{% endblock %}

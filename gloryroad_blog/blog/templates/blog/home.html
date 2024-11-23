@@ -1,0 +1,23 @@
+<!DOCTYPE html>  
+<html lang="zh-Hans">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>主页</title>  
+         {% load static%}
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">  
+</head>  
+<body>  
+    <div class="container">  
+        <h1>好好学习，天天向上</h1>  
+        {% if user.is_authenticated %}  
+            <p>Hello, {{ user.username }}!</p>  
+            <a href="{% url 'post_create' %}" class="btn btn-danger">发布博客</a>  
+            <a href="{% url 'logout' %}" class="btn btn-danger">登出</a>  
+        {% else %}  
+            <p>请 <a href="{% url 'login' %}">登录</a></p>  
+        {% endif %}  
+    </div>  
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>  
+</body>  
+</html>
